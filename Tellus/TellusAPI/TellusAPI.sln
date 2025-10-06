@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellusAPI.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellusAPI.Presentation", "Presentation\TellusAPI.Presentation.csproj", "{12723B06-190A-472E-9E84-200FD761FC37}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F4BF7CCF-EB18-4132-8879-10750424ABEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellusAPI.UnitTests", "Tests\TellusAPI.UnitTests\TellusAPI.UnitTests.csproj", "{63252AF5-B412-4659-8772-4C40B4BB61A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellusAPI.IntegrationTests", "Tests\TellusAPI.IntegrationTests\TellusAPI.IntegrationTests.csproj", "{395E5056-34AA-4DDD-B0F0-A31EA2D8319D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +42,17 @@ Global
 		{12723B06-190A-472E-9E84-200FD761FC37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12723B06-190A-472E-9E84-200FD761FC37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12723B06-190A-472E-9E84-200FD761FC37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63252AF5-B412-4659-8772-4C40B4BB61A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63252AF5-B412-4659-8772-4C40B4BB61A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63252AF5-B412-4659-8772-4C40B4BB61A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63252AF5-B412-4659-8772-4C40B4BB61A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395E5056-34AA-4DDD-B0F0-A31EA2D8319D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395E5056-34AA-4DDD-B0F0-A31EA2D8319D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395E5056-34AA-4DDD-B0F0-A31EA2D8319D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395E5056-34AA-4DDD-B0F0-A31EA2D8319D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{63252AF5-B412-4659-8772-4C40B4BB61A0} = {F4BF7CCF-EB18-4132-8879-10750424ABEA}
+		{395E5056-34AA-4DDD-B0F0-A31EA2D8319D} = {F4BF7CCF-EB18-4132-8879-10750424ABEA}
 	EndGlobalSection
 EndGlobal
