@@ -12,5 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\TellusAPI.Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\TellusAPI.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

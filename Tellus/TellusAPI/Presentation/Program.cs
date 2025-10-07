@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Dapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-
 // Configurações customizadas
 ServiceRegistration.ConfigureServices(builder.Services);
 AuthenticationConfig.ConfigureAuthentication(builder.Services, builder.Configuration);

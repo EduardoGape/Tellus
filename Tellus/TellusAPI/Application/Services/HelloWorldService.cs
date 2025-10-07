@@ -17,7 +17,8 @@ namespace TellusAPI.Application.Services
 
         public async Task<string> GetHelloWorldMessage()
         {
-            return "Hello World from Tellus API!";
+            return await Task.FromResult("Hello World from Tellus API!");
+
         }
 
         public async Task<IEnumerable<HelloWorld>> GetAllAsync()
