@@ -29,8 +29,8 @@ dotnet --version
 Deve retornar: 8.0.x
 🛠️ Instalação e Configuração
 ## 1. Clonar o Repositório
-[git clone git@github.com:EduardoGape/Tellus.git]
-cd Tellus
+**git clone git@github.com:EduardoGape/Tellus.git**
+
 
 ## 2. Configurar o Banco de Dados
 CREATE DATABASE tellus;
