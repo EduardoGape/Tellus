@@ -1,0 +1,44 @@
+@page "/"
+@page "/login"
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h3 class="text-center mb-4">Tellus System</h3>
+        <p class="text-center text-muted mb-4">Please login to continue</p>
+        
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText @bind-Value="loginModel.Email" class="form-control" id="email" placeholder="Enter your email" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <InputText type="password" @bind-Value="loginModel.Password" class="form-control" id="password" placeholder="Enter your password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                    <span> Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-3">
+                    @errorMessage
+                </div>
+            }
+        </EditForm>
+    </div>
+</div>

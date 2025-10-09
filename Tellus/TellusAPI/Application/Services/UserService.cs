@@ -51,7 +51,7 @@ namespace TellusAPI.Application.Services
             parameters.Add("Name", dto.Name);
             parameters.Add("Email", dto.Email);
             parameters.Add("Password", dto.Password);
-            parameters.Add("Profile", dto.Profile); // ✅ direto, JsonTypeHandler cuida do JSONB
+            parameters.Add("Profile", dto.Profile); 
 
             return _db.QueryFirstAsync<User>(sql, parameters);
         }
@@ -145,7 +145,11 @@ namespace TellusAPI.Application.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email)
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("UserId", user.Id.ToString()), 
+                    new Claim("UserName", user.Name), 
+                    new Claim("ProfileId", user.Profile.Id.ToString()), 
+                    new Claim("ProfileName", user.Profile.Name) 
                 }),
                 Expires = DateTime.UtcNow.AddHours(4),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

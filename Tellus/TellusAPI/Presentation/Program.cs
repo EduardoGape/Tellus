@@ -10,11 +10,9 @@ using Dapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) Services primeiro
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 2) CORS - Configuração específica para desenvolvimento
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -25,7 +23,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-// Configurações customizadas
 ServiceRegistration.ConfigureServices(builder.Services);
 AuthenticationConfig.ConfigureAuthentication(builder.Services, builder.Configuration);
 DatabaseConfig.ConfigureDatabase(builder.Services, builder.Configuration);
@@ -33,10 +30,8 @@ SwaggerConfig.ConfigureSwagger(builder.Services);
 
 var app = builder.Build();
 
-// 3) CORS primeiro
 app.UseCors("AllowAll");
 
-// 4) Swagger em Dev
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -49,8 +44,6 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/", () => Results.Redirect("/swagger"));
 }
 
-// 5) Pipeline - REMOVA o HTTPS Redirection temporariamente
-// app.UseHttpsRedirection(); // COMENTE ESTA LINHA
 
 app.UseAuthentication();
 app.UseAuthorization();

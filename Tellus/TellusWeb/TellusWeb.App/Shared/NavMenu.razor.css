@@ -1,0 +1,153 @@
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.top-row {
+    height: 3.5rem;
+    background-color: #174A6A; /* Azul petróleo */
+    border-bottom: 1px solid #BFCBD6; /* Cinza neutro */
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #FFFFFF !important;
+}
+
+.navbar-dark .navbar-brand {
+    color: #FFFFFF;
+}
+
+.oi {
+    width: 2rem;
+    font-size: 1.1rem;
+    vertical-align: text-top;
+    top: -2px;
+    color: #00AEEF; /* Azul ciano para ícones */
+}
+
+.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item ::deep a {
+        color: #E5F1FB; /* Azul claro para texto normal */
+        border-radius: 6px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+        transition: all 0.3s ease;
+        margin: 0 0.5rem;
+        padding: 0 1rem;
+    }
+
+        .nav-item ::deep a.active {
+            background: linear-gradient(135deg, #2B6DB6 0%, #00AEEF 100%); /* Azul principal para azul ciano */
+            color: #FFFFFF;
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(43, 109, 182, 0.3);
+        }
+
+        .nav-item ::deep a:hover {
+            background-color: rgba(0, 174, 239, 0.2); /* Azul ciano com transparência */
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #00AEEF; /* Azul ciano */
+        }
+
+.navbar-nav {
+    flex-direction: column;
+}
+
+.flex-column {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+/* Ícone especial para o item ativo */
+.nav-item ::deep a.active .oi {
+    color: #FFFFFF;
+}
+
+/* Efeito de brilho suave para itens ativos */
+.nav-item ::deep a.active {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item ::deep a.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-item ::deep a.active:hover::before {
+    left: 100%;
+}
+
+@media (min-width: 769px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block !important;
+    }
+    
+    .top-row {
+        display: none;
+    }
+}
+
+/* Melhorias para mobile */
+@media (max-width: 768px) {
+    .nav-item ::deep a {
+        margin: 0 0.25rem;
+        padding: 0 0.75rem;
+    }
+    
+    .nav-item ::deep a.active {
+        transform: translateX(3px);
+    }
+    
+    .nav-item ::deep a:hover {
+        transform: translateX(2px);
+    }
+}
+.navbar-text {
+    font-size: 0.9rem;
+}
+
+.navbar-text strong {
+    color: #fff;
+}
+
+.navbar-text small {
+    font-size: 0.8rem;
+}
+
+.btn-outline-light {
+    border-color: rgba(255,255,255,0.3);
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255,255,255,0.1);
+}

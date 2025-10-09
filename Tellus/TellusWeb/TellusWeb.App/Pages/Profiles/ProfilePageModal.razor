@@ -1,0 +1,186 @@
+@using TellusWeb.Domain.DTOs
+@using TellusWeb.Domain.Entities
+
+@if (ShowModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(IsEditing ? "Edit Profile" : "Create Profile")</h5>
+                    <button type="button" class="btn-close" @onclick="OnClose"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="name" 
+                               value="@CurrentProfile.Name" 
+                               @oninput="OnNameChanged"
+                               placeholder="Enter profile name" />
+                        @if (string.IsNullOrWhiteSpace(CurrentProfile.Name))
+                        {
+                            <small class="text-danger">Name is required</small>
+                        }
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="active" 
+                               checked="@CurrentProfile.Active" 
+                               @onchange="OnActiveChanged" />
+                        <label class="form-check-label" for="active">Active</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Functions</label>
+                        <div class="border p-3 rounded">
+                            @if (AllFunctions != null && AllFunctions.Any())
+                            {
+                                <div class="row">
+                                    @foreach (var function in AllFunctions.Where(f => f.IsActive))
+                                    {
+                                        <div class="col-md-6 mb-2">
+                                            <div class="card">
+                                                <div class="card-body p-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" 
+                                                               checked="@IsFunctionSelected(function.Id)"
+                                                               @onchange="@(e => OnFunctionSelectionChanged(e, function))" />
+                                                        <label class="form-check-label fw-bold">@function.Name</label>
+                                                    </div>
+                                                    @if (IsFunctionSelected(function.Id))
+                                                    {
+                                                        <div class="mt-2 ms-3">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                       checked="@IsFunctionReadEnabled(function.Id)"
+                                                                       @onchange="@(e => OnFunctionReadChanged(e, function))" />
+                                                                <label class="form-check-label">Read</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                       checked="@IsFunctionWriteEnabled(function.Id)"
+                                                                       @onchange="@(e => OnFunctionWriteChanged(e, function))" />
+                                                                <label class="form-check-label">Write</label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <small class="text-muted">No functions available</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="OnSaveClicked" disabled="@(!CanSave)">
+                        @(IsEditing ? "Update" : "Create")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public CreateProfileDto CurrentProfile { get; set; } = new();
+    [Parameter] public EventCallback<CreateProfileDto> CurrentProfileChanged { get; set; }
+    [Parameter] public List<Function> AllFunctions { get; set; } = new();
+    [Parameter] public int EditingId { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public bool CanSave { get; set; }
+
+    private async Task OnNameChanged(ChangeEventArgs e)
+    {
+        CurrentProfile.Name = e.Value?.ToString();
+        await CurrentProfileChanged.InvokeAsync(CurrentProfile);
+    }
+
+    private async Task OnActiveChanged(ChangeEventArgs e)
+    {
+        CurrentProfile.Active = (bool)(e.Value ?? false);
+        await CurrentProfileChanged.InvokeAsync(CurrentProfile);
+    }
+
+    private bool IsFunctionSelected(int functionId)
+    {
+        return CurrentProfile.Functions?.Any(f => f.Id == functionId) ?? false;
+    }
+
+    private bool IsFunctionReadEnabled(int functionId)
+    {
+        return CurrentProfile.Functions?.FirstOrDefault(f => f.Id == functionId)?.CanRead ?? false;
+    }
+
+    private bool IsFunctionWriteEnabled(int functionId)
+    {
+        return CurrentProfile.Functions?.FirstOrDefault(f => f.Id == functionId)?.CanWrite ?? false;
+    }
+
+    private async Task OnFunctionSelectionChanged(ChangeEventArgs e, Function function)
+    {
+        var isSelected = (bool)(e.Value ?? false);
+        
+        if (isSelected)
+        {
+            // Add function to profile with default permissions
+            if (CurrentProfile.Functions == null)
+                CurrentProfile.Functions = new List<Function>();
+                
+            if (!CurrentProfile.Functions.Any(f => f.Id == function.Id))
+            {
+                CurrentProfile.Functions.Add(new Function 
+                { 
+                    Id = function.Id, 
+                    Name = function.Name,
+                    CanRead = true, // Default to read permission
+                    CanWrite = false,
+                    IsActive = function.IsActive
+                });
+            }
+        }
+        else
+        {
+            // Remove function from profile
+            CurrentProfile.Functions?.RemoveAll(f => f.Id == function.Id);
+        }
+        
+        await CurrentProfileChanged.InvokeAsync(CurrentProfile);
+    }
+
+    private async Task OnFunctionReadChanged(ChangeEventArgs e, Function function)
+    {
+        var canRead = (bool)(e.Value ?? false);
+        var existingFunction = CurrentProfile.Functions?.FirstOrDefault(f => f.Id == function.Id);
+        
+        if (existingFunction != null)
+        {
+            existingFunction.CanRead = canRead;
+            await CurrentProfileChanged.InvokeAsync(CurrentProfile);
+        }
+    }
+
+    private async Task OnFunctionWriteChanged(ChangeEventArgs e, Function function)
+    {
+        var canWrite = (bool)(e.Value ?? false);
+        var existingFunction = CurrentProfile.Functions?.FirstOrDefault(f => f.Id == function.Id);
+        
+        if (existingFunction != null)
+        {
+            existingFunction.CanWrite = canWrite;
+            await CurrentProfileChanged.InvokeAsync(CurrentProfile);
+        }
+    }
+
+    private async Task OnSaveClicked()
+    {
+        await OnSave.InvokeAsync();
+    }
+}

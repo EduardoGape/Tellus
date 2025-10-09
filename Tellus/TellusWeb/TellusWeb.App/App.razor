@@ -1,0 +1,27 @@
+﻿@inject NavigationManager Navigation
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Page not found.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    protected override void OnInitialized()
+    {
+        var currentUri = Navigation.Uri;
+        var uri = new Uri(currentUri);
+        
+        // Se for a página inicial (sem path ou apenas "/")
+        if (string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}

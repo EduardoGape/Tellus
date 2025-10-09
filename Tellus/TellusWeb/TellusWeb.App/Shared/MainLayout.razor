@@ -1,0 +1,25 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<div class="page">
+    @if (!IsLoginPage())
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private bool IsLoginPage()
+    {
+        var uri = Navigation.Uri;
+        return uri.Contains("/login", StringComparison.OrdinalIgnoreCase);
+    }
+}

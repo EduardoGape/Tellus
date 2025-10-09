@@ -25,18 +25,14 @@ namespace TellusAPI.IntegrationTests.Services
 
         public async Task InitializeAsync()
         {
-            // Abrir conexão
             _dbConnection = new NpgsqlConnection(_connectionString);
             await _dbConnection.OpenAsync();
 
-            // Registrar executor Dapper e serviço
             _dbExecutor = new DapperDatabaseExecutor(_dbConnection);
             _service = new ProfileService(_dbExecutor);
 
-            // Registrar TypeHandler para List<Function>
             SqlMapper.AddTypeHandler(new JsonTypeHandler<List<Function>>());
 
-            // Limpar e preparar banco
             await CleanDatabaseAsync();
             await SeedProfilesAsync();
         }

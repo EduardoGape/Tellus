@@ -1,0 +1,150 @@
+@using TellusWeb.Domain.DTOs
+@using TellusWeb.Domain.Entities
+@using TellusWeb.Domain.Entities.Reference
+
+@if (ShowModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(IsEditing ? "Edit User" : "Create User")</h5>
+                    <button type="button" class="btn-close" @onclick="OnClose"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="name" 
+                               value="@CurrentUser.Name" 
+                               @oninput="OnNameChanged"
+                               placeholder="Enter user name" />
+                        @if (string.IsNullOrWhiteSpace(CurrentUser.Name))
+                        {
+                            <small class="text-danger">Name is required</small>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" 
+                               value="@CurrentUser.Email" 
+                               @oninput="OnEmailChanged"
+                               placeholder="Enter user email" />
+                        @if (string.IsNullOrWhiteSpace(CurrentUser.Email))
+                        {
+                            <small class="text-danger">Email is required</small>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password" 
+                               value="@CurrentUser.Password" 
+                               @oninput="OnPasswordChanged"
+                               placeholder="Enter user password" />
+                        @if (string.IsNullOrWhiteSpace(CurrentUser.Password))
+                        {
+                            <small class="text-danger">Password is required</small>
+                        }
+                        @if (IsEditing)
+                        {
+                            <small class="text-muted">Leave empty to keep current password</small>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile" class="form-label">Profile *</label>
+                        <select class="form-select" id="profile" 
+                                value="@CurrentUser.Profile?.Id" 
+                                @onchange="OnProfileChanged">
+                            <option value="0">Select a profile</option>
+                            @if (Profiles != null)
+                            {
+                                @foreach (var profile in Profiles.Where(p => p.Active))
+                                {
+                                    <option value="@profile.Id">@profile.Name</option>
+                                }
+                            }
+                        </select>
+                        @if (CurrentUser.Profile?.Id == 0)
+                        {
+                            <small class="text-danger">Profile is required</small>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="OnSaveClicked" disabled="@(!CanSave)">
+                        @(IsEditing ? "Update" : "Create")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public CreateUserDto CurrentUser { get; set; } = new();
+    [Parameter] public EventCallback<CreateUserDto> CurrentUserChanged { get; set; }
+    [Parameter] public List<ProfileEntity> Profiles { get; set; } = new();
+    [Parameter] public int EditingId { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public bool CanSave { get; set; }
+
+    private async Task OnNameChanged(ChangeEventArgs e)
+    {
+        CurrentUser.Name = e.Value?.ToString();
+        await CurrentUserChanged.InvokeAsync(CurrentUser);
+    }
+
+    private async Task OnEmailChanged(ChangeEventArgs e)
+    {
+        CurrentUser.Email = e.Value?.ToString();
+        await CurrentUserChanged.InvokeAsync(CurrentUser);
+    }
+
+    private async Task OnPasswordChanged(ChangeEventArgs e)
+    {
+        CurrentUser.Password = e.Value?.ToString();
+        await CurrentUserChanged.InvokeAsync(CurrentUser);
+    }
+
+    private async Task OnProfileChanged(ChangeEventArgs e)
+    {
+        var profileId = int.TryParse(e.Value?.ToString(), out var id) ? id : 0;
+        
+        if (profileId > 0)
+        {
+            var selectedProfile = Profiles.FirstOrDefault(p => p.Id == profileId);
+            if (selectedProfile != null)
+            {
+                CurrentUser.Profile = new ProfileReference
+                {
+                    Id = selectedProfile.Id,
+                    Name = selectedProfile.Name
+                };
+            }
+        }
+        else
+        {
+            CurrentUser.Profile = new ProfileReference();
+        }
+        
+        await CurrentUserChanged.InvokeAsync(CurrentUser);
+    }
+
+    private async Task OnSaveClicked()
+    {
+        await OnSave.InvokeAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Garante que CurrentUser.Profile não seja nulo
+        if (CurrentUser.Profile == null)
+        {
+            CurrentUser.Profile = new ProfileReference();
+        }
+        base.OnParametersSet();
+    }
+}

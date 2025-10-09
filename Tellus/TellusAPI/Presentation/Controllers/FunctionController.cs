@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using TellusAPI.Application.Interfaces;
 using TellusAPI.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TellusAPI.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FunctionController : ControllerBase
     {
         private readonly IFunctionService _functionService;

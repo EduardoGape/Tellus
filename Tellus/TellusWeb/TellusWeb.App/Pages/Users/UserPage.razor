@@ -1,0 +1,222 @@
+@page "/users"
+@using TellusWeb.Domain.Entities
+@using TellusWeb.Application.Interfaces
+@using TellusWeb.Domain.Filters
+@using Microsoft.AspNetCore.Components.Web
+
+@if (currentUser == null)
+{
+    <div class="alert alert-warning">
+        <span class="oi oi-warning"></span> Not authenticated. Please <a href="/login">login</a>.
+    </div>
+}
+else if (!canViewUsers)
+{
+    <div class="alert alert-danger">
+        <span class="oi oi-lock-locked"></span> You don't have permission to view users.
+        Your profile: <strong>@currentUser.ProfileName</strong>
+        <br>
+        <small>Required: Read permission on Users module</small>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>User Management</h4>
+        @if (canEditUsers)
+        {
+            <button class="btn btn-primary" @onclick="ShowCreateModal">
+                <span class="oi oi-plus"></span> Add New User
+            </button>
+        }
+        else
+        {
+            <span class="badge bg-warning">View Only Mode</span>
+        }
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="searchName" 
+                           @bind="searchFilter.Name" 
+                           @bind:event="oninput"
+                           placeholder="Search by name..." 
+                           @onkeypress="OnSearchKeyPress" />
+                </div>
+                <div class="col-md-4">
+                    <label for="searchEmail" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="searchEmail" 
+                           @bind="searchFilter.Email" 
+                           @bind:event="oninput"
+                           placeholder="Search by email..." 
+                           @onkeypress="OnSearchKeyPress" />
+                </div>
+                <div class="col-md-4">
+                    <label for="searchProfile" class="form-label">Profile</label>
+                    <select class="form-select" id="searchProfile" 
+                            @bind="searchFilter.ProfileId">
+                        <option value="">All Profiles</option>
+                        @foreach (var profile in profilesList)
+                        {
+                            <option value="@profile.Id">@profile.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button class="btn btn-primary me-2" @onclick="SearchUsers" disabled="@isSearching">
+                        @if (isSearching)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <span> Searching...</span>
+                        }
+                        else
+                        {
+                            <span class="oi oi-magnifying-glass"></span>
+                            <span> Search</span>
+                        }
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="ClearFilters">
+                        <span class="oi oi-reload"></span> Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (isSearching && users.Count == 0)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading users...</p>
+        </div>
+    }
+    else if (users.Count == 0 && !isSearching)
+    {
+        <div class="alert alert-info">
+            @if (hasSearched)
+            {
+                <text>No users found matching your criteria.</text>
+                @if (canEditUsers)
+                {
+                    <text>Click "Add New User" to create one.</text>
+                }
+            }
+            else
+            {
+                <text>No users available.</text>
+                @if (canEditUsers)
+                {
+                    <text>Click "Add New User" to create one.</text>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <span class="text-muted">
+                    Showing @((pagedResult.Page - 1) * pagedResult.PageSize + 1) to 
+                    @Math.Min(pagedResult.Page * pagedResult.PageSize, pagedResult.Total) of 
+                    @pagedResult.Total users
+                </span>
+            </div>
+            <div>
+                <span class="text-muted me-2">Page @pagedResult.Page of @pagedResult.TotalPages</span>
+            </div>
+        </div>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Profile</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>
+                            <span class="badge bg-info">@user.Profile.Name</span>
+                        </td>
+                        <td>
+                            @if (canEditUsers)
+                            {
+                                <button class="btn btn-sm btn-info me-1" @onclick="() => ShowEditModal(user)" title="Edit">
+                                    <span class="oi oi-pencil"></span> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" @onclick="() => DeleteUser(user.Id)" title="Delete">
+                                    <span class="oi oi-trash"></span> Delete
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="text-muted">View only</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (pagedResult.TotalPages > 1)
+        {
+            <nav aria-label="User pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!pagedResult.HasPrevious ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => ChangePage(pagedResult.Page - 1)" 
+                                disabled="@(!pagedResult.HasPrevious)">Previous</button>
+                    </li>
+                    
+                    @for (int i = 1; i <= pagedResult.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == pagedResult.Page ? "active" : "")">
+                            <button class="page-link" @onclick="() => ChangePage(i)">@i</button>
+                        </li>
+                    }
+                    
+                    <li class="page-item @(!pagedResult.HasNext ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => ChangePage(pagedResult.Page + 1)" 
+                                disabled="@(!pagedResult.HasNext)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+}
+
+@if (canViewUsers)
+{
+    <UserPageModal 
+        ShowModal="showModal" 
+        IsEditing="isEditing" 
+        CurrentUser="currentUserDto" 
+        CurrentUserChanged="HandleCurrentUserChanged"
+        Profiles="profilesList"
+        EditingId="editingId" 
+        OnClose="CloseModal" 
+        OnSave="SaveUser" 
+        CanSave="CanSave" />
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="ClearError"></button>
+    </div>
+}

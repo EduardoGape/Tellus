@@ -34,7 +34,6 @@ namespace TellusAPI.IntegrationTests.Services
                 _handlersRegistered = true;
             }
 
-            // Configuração em memória para JWT
             var inMemorySettings = new Dictionary<string, string>
             {
                 {"JWT:SecretKey", "0ae1c7c01a714cd9b45134ac180ead05b3036572b97a4878a6ea571006c2e929"}
@@ -196,9 +195,6 @@ namespace TellusAPI.IntegrationTests.Services
             result.Items.Should().NotBeEmpty();
         }
 
-        // ======================
-        // Teste do LoginAsync
-        // ======================
         [Fact]
         public async Task LoginAsync_ShouldReturnToken_WhenCredentialsAreValid()
         {

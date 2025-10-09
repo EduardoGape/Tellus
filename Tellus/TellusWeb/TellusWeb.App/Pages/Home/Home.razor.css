@@ -1,0 +1,104 @@
+.container-fluid {
+    padding: 2rem;
+    background: #E5F1FB; /* Azul claro (background) */
+    min-height: 100vh;
+}
+
+.display-4 {
+    color: #1E4875; /* Azul escuro para títulos */
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.lead {
+    color: #2B6DB6; /* Azul principal */
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(30, 72, 117, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    background: white;
+    border: 1px solid #BFCBD6; /* Cinza neutro para bordas */
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(43, 109, 182, 0.15);
+    border-color: #00AEEF; /* Azul ciano no hover */
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    color: #1E4875; /* Azul escuro */
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.card-text {
+    color: #2B6DB6; /* Azul principal */
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.row.mt-5 {
+    margin-top: 3rem !important;
+}
+
+/* Efeitos adicionais para os cards */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2B6DB6, #00AEEF); /* Azul principal para azul ciano */
+}
+
+/* Destaque especial para o primeiro card */
+.card:nth-child(1)::before {
+    background: linear-gradient(90deg, #F59C00, #FFB133); /* Laranja para cards especiais */
+}
+
+.card:nth-child(1):hover {
+    box-shadow: 0 12px 25px rgba(245, 156, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+    }
+}
+
+/* Melhorias de acessibilidade */
+.card:focus-within {
+    outline: 2px solid #00AEEF; /* Azul ciano */
+    outline-offset: 2px;
+}

@@ -1,0 +1,14 @@
+@inject TellusWeb.Application.Interfaces.ITokenService TokenService
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        var token = TokenService.GetToken();
+        
+        if (string.IsNullOrEmpty(token))
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}

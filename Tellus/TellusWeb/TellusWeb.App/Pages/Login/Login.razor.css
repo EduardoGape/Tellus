@@ -1,0 +1,90 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E5F1FB; /* Azul claro (background) */
+    padding: 20px;
+}
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #BFCBD6; /* Cinza neutro para bordas */
+}
+
+.auth-card h3 {
+    color: #1E4875; /* Azul escuro para títulos */
+    font-weight: 600;
+}
+
+.auth-card p.text-muted {
+    color: #1E4875 !important; /* Azul escuro */
+    opacity: 0.8;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2B6DB6 0%, #1E4875 100%); /* Azul principal para azul escuro */
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1E4875 0%, #174A6A 100%); /* Azul escuro para azul petróleo */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(43, 109, 182, 0.3);
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #BFCBD6; /* Cinza neutro */
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #00AEEF; /* Azul ciano para foco */
+    box-shadow: 0 0 0 0.2rem rgba(0, 174, 239, 0.25);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1E4875; /* Azul escuro */
+    margin-bottom: 0.5rem;
+}
+
+.text-muted {
+    color: #1E4875 !important; /* Azul escuro */
+    opacity: 0.7;
+}
+
+/* Efeitos adicionais para melhorar a experiência */
+.auth-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* Para o botão de ação secundário (se tiver) */
+.btn-secondary {
+    background: #F59C00; /* Laranja para CTA secundário */
+    border: none;
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #e08c00;
+    transform: translateY(-2px);
+}

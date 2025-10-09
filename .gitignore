@@ -1,0 +1,43 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# NuGet
+.nuget/
+packages/
+*.nupkg
+nuget.exe
+
+# Logs
+*.log
+*.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Azure
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+# Database
+*.mdf
+*.ldf

@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TellusAPI.Application.Interfaces;
 using TellusAPI.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TellusAPI.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProfileController : ControllerBase
     {
         private readonly IProfileService _profileService;

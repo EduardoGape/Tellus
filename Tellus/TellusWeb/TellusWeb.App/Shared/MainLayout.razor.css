@@ -1,0 +1,49 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    background: #E5F1FB; /* Azul claro (background) */
+}
+
+.sidebar {
+    background: linear-gradient(135deg, #1E4875 0%, #174A6A 100%); /* Azul escuro para Azul petróleo */
+    width: 250px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    padding-top: 1.5rem;
+    flex: 1;
+    background: #E5F1FB; /* Azul claro (background) */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        background: linear-gradient(135deg, #1E4875 0%, #174A6A 100%); /* Mantém o gradiente no mobile */
+    }
+    
+    .page {
+        flex-direction: column;
+    }
+}
+
+/* Adicionando uma borda sutil para separação */
+.sidebar {
+    border-right: 1px solid #BFCBD6; /* Cinza neutro */
+}
+
+/* Melhoria no shadow para combinar com a paleta */
+.sidebar {
+    box-shadow: 2px 0 15px rgba(30, 72, 117, 0.15);
+}

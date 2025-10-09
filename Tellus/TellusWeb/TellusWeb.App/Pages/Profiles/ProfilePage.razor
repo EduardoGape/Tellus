@@ -1,0 +1,135 @@
+@page "/profiles"
+@using TellusWeb.Domain.Entities
+@using TellusWeb.Application.Interfaces
+
+@if (currentUser == null)
+{
+    <div class="alert alert-warning">
+        <span class="oi oi-warning"></span> Not authenticated. Please <a href="/login">login</a>.
+    </div>
+}
+else if (!canViewProfiles)
+{
+    <div class="alert alert-danger">
+        <span class="oi oi-lock-locked"></span> You don't have permission to view profiles.
+        Your profile: <strong>@currentUser.ProfileName</strong>
+        <br>
+        <small>Required: Read permission on Profiles module</small>
+    </div>
+}
+else if (profiles == null)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Loading profiles...</p>
+    </div>
+}
+else if (!profiles.Any())
+{
+    <div class="alert alert-info">
+        No profiles found. 
+        @if (canEditProfiles)
+        {
+            <text>Click "Add New Profile" to create one.</text>
+        }
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        @if (canEditProfiles)
+        {
+            <button class="btn btn-primary" @onclick="ShowCreateModal">
+                <span class="oi oi-plus"></span> Add New Profile
+            </button>
+        }
+        else
+        {
+            <span class="badge bg-warning">View Only Mode</span>
+        }
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Functions</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var profile in profiles)
+            {
+                <tr>
+                    <td>@profile.Id</td>
+                    <td>@profile.Name</td>
+                    <td>
+                        @if (profile.Functions.Any())
+                        {
+                            <div>
+                                @foreach (var function in profile.Functions.Take(3))
+                                {
+                                    <span class="badge bg-secondary me-1">@function.Name</span>
+                                }
+                                @if (profile.Functions.Count > 3)
+                                {
+                                    <span class="badge bg-info">+@(profile.Functions.Count - 3) more</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No functions</span>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge @(profile.Active ? "bg-success" : "bg-danger")">
+                            @(profile.Active ? "Active" : "Inactive")
+                        </span>
+                    </td>
+                    <td>
+                        @if (canEditProfiles)
+                        {
+                            <button class="btn btn-sm btn-info me-1" @onclick="() => ShowEditModal(profile)" title="Edit">
+                                <span class="oi oi-pencil"></span> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteProfile(profile.Id)" title="Delete">
+                                <span class="oi oi-trash"></span> Delete
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">View only</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (canViewProfiles)
+{
+    <ProfilePageModal 
+        ShowModal="showModal" 
+        IsEditing="isEditing" 
+        CurrentProfile="currentProfile" 
+        CurrentProfileChanged="HandleCurrentProfileChanged"
+        AllFunctions="allFunctions"
+        EditingId="editingId" 
+        OnClose="CloseModal" 
+        OnSave="SaveProfile" 
+        CanSave="CanSave" />
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="ClearError"></button>
+    </div>
+}

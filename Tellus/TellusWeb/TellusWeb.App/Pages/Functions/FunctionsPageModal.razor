@@ -1,0 +1,68 @@
+@using TellusWeb.Domain.DTOs
+
+@if (ShowModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(IsEditing ? "Edit Function" : "Create Function")</h5>
+                    <button type="button" class="btn-close" @onclick="OnClose"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="name" 
+                               value="@CurrentFunction.Name" 
+                               @oninput="OnNameChanged"
+                               placeholder="Enter function name" />
+                        @if (string.IsNullOrWhiteSpace(CurrentFunction.Name))
+                        {
+                            <small class="text-danger">Name is required</small>
+                        }
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isActive" 
+                               checked="@CurrentFunction.IsActive" 
+                               @onchange="OnIsActiveChanged" />
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="OnSaveClicked" disabled="@(!CanSave)">
+                        @(IsEditing ? "Update" : "Create")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public CreateFunctionDto CurrentFunction { get; set; } = new();
+    [Parameter] public EventCallback<CreateFunctionDto> CurrentFunctionChanged { get; set; }
+    [Parameter] public int EditingId { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public bool CanSave { get; set; }
+
+    private async Task OnNameChanged(ChangeEventArgs e)
+    {
+        CurrentFunction.Name = e.Value?.ToString();
+        await CurrentFunctionChanged.InvokeAsync(CurrentFunction);
+    }
+
+    private async Task OnIsActiveChanged(ChangeEventArgs e)
+    {
+        CurrentFunction.IsActive = (bool)(e.Value ?? false);
+        await CurrentFunctionChanged.InvokeAsync(CurrentFunction);
+    }
+
+    private async Task OnSaveClicked()
+    {
+        await OnSave.InvokeAsync();
+    }
+}

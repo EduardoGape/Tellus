@@ -1,0 +1,126 @@
+@page "/functions"
+@using TellusWeb.Domain.Entities
+@using TellusWeb.Application.Interfaces
+
+@if (currentUser == null)
+{
+    <div class="alert alert-warning">
+        <span class="oi oi-warning"></span> Not authenticated. Please <a href="/login">login</a>.
+    </div>
+}
+else if (!canViewFunctions)
+{
+    <div class="alert alert-danger">
+        <span class="oi oi-lock-locked"></span> You don't have permission to view functions.
+        Your profile: <strong>@currentUser.ProfileName</strong>
+        <br>
+        <small>Required: Read permission on Functions module</small>
+    </div>
+}
+else if (functions == null)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Loading functions...</p>
+    </div>
+}
+else if (!functions.Any())
+{
+    <div class="alert alert-info">
+        No functions found. 
+        @if (canEditFunctions)
+        {
+            <text>Click "Add New Function" to create one.</text>
+        }
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        @if (canEditFunctions)
+        {
+            <button class="btn btn-primary" @onclick="ShowCreateModal">
+                <span class="oi oi-plus"></span> Add New Function
+            </button>
+        }
+        else
+        {
+            <span class="badge bg-warning">View Only Mode</span>
+        }
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Read</th>
+                <th>Write</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var function in functions)
+            {
+                <tr>
+                    <td>@function.Id</td>
+                    <td>@function.Name</td>
+                    <td>
+                        <span class="badge @(function.IsActive ? "bg-success" : "bg-danger")">
+                            @(function.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @(function.CanRead ? "bg-info" : "bg-secondary")">
+                            @(function.CanRead ? "Yes" : "No")
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @(function.CanWrite ? "bg-warning" : "bg-secondary")">
+                            @(function.CanWrite ? "Yes" : "No")
+                        </span>
+                    </td>
+                    <td>
+                        @if (canEditFunctions)
+                        {
+                            <button class="btn btn-sm btn-info me-1" @onclick="() => ShowEditModal(function)" title="Edit">
+                                <span class="oi oi-pencil"></span> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteFunction(function.Id)" title="Delete">
+                                <span class="oi oi-trash"></span> Delete
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">View only</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (canViewFunctions)
+{
+    <FunctionsPageModal 
+        ShowModal="showModal" 
+        IsEditing="isEditing" 
+        CurrentFunction="currentFunction" 
+        CurrentFunctionChanged="HandleCurrentFunctionChanged"
+        EditingId="editingId" 
+        OnClose="CloseModal" 
+        OnSave="SaveFunction" 
+        CanSave="CanSave" />
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="ClearError"></button>
+    </div>
+}

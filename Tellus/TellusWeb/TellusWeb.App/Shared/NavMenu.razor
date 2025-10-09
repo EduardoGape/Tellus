@@ -1,0 +1,112 @@
+@using TellusWeb.Application.Interfaces
+@using TellusWeb.Domain.Entities
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">TellusWeb</a>
+        
+        @if (currentUser != null)
+        {
+            <div class="navbar-text me-3">
+                <span class="oi oi-person" aria-hidden="true"></span>
+                Welcome, <strong>@currentUser.Name</strong> 
+                <small class="text-muted">(@currentUser.ProfileName)</small>
+            </div>
+        }
+        
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        
+        @if (canAccessFunctions)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="functions">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Functions
+                </NavLink>
+            </div>
+        }
+        
+        @if (canAccessProfiles)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="profiles">
+                    <span class="oi oi-people" aria-hidden="true"></span> Profiles
+                </NavLink>
+            </div>
+        }
+        
+        @if (canAccessUsers)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <span class="oi oi-person" aria-hidden="true"></span> Users
+                </NavLink>
+            </div>
+        }
+        
+        @if (currentUser != null)
+        {
+            <div class="nav-item px-3 mt-3">
+                <button class="btn btn-outline-light btn-sm w-100" @onclick="Logout">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                </button>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    [Inject]
+    private ITokenDecoderService TokenDecoder { get; set; } = default!;
+    
+    [Inject]
+    private ITokenService TokenService { get; set; } = default!;
+    
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    [Inject]
+    private IAuthorizationService AuthService { get; set; } = default!;
+
+    private bool collapseNavMenu = true;
+    private CurrentUser? currentUser;
+    private bool canAccessFunctions = false;
+    private bool canAccessProfiles = false;
+    private bool canAccessUsers = false;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = TokenDecoder.GetCurrentUser();
+        
+        if (currentUser != null)
+        {
+            canAccessFunctions = await AuthService.CanAccessModuleAsync("Funções");
+            canAccessProfiles = await AuthService.CanAccessModuleAsync("Perfil");
+            canAccessUsers = await AuthService.CanAccessModuleAsync("Usuários");
+        }
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void Logout()
+    {
+        TokenService.ClearToken();
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}
